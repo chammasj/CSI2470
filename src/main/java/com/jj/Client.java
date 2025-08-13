@@ -25,8 +25,9 @@ public class Client extends JFrame {
         // Panel p to hold the label and text field
         JPanel p = new JPanel();
         p.setLayout(new BorderLayout());
-        p.add(new JLabel("Enter item OR use REMOVE @=INDEX to delete"), BorderLayout.WEST);
+        p.add(new JLabel("Enter item OR use REMOVE @=INDEX to delete "), BorderLayout.WEST);
         p.add(jtf, BorderLayout.CENTER);
+        p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         jtf.setHorizontalAlignment(JTextField.RIGHT);
 
         setLayout(new BorderLayout());
@@ -44,11 +45,12 @@ public class Client extends JFrame {
             Socket socket = new Socket("localhost", 8000);
 
             // Create an input stream to receive data from the server
-            fromServer = new DataInputStream(
-                    socket.getInputStream());
+            fromServer = new DataInputStream(socket.getInputStream());
 
             // Create an output stream to send data to the server
             toServer = new DataOutputStream(socket.getOutputStream());
+        } catch (ConnectException ex) {
+            jta.append(ex.toString() + "\nIs the server running?\n");
         } catch (IOException ex) {
             jta.append(ex.toString() + '\n');
         }
