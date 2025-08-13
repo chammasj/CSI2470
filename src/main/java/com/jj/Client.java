@@ -25,7 +25,7 @@ public class Client extends JFrame {
         // Panel p to hold the label and text field
         JPanel p = new JPanel();
         p.setLayout(new BorderLayout());
-        p.add(new JLabel("Enter radius"), BorderLayout.WEST);
+        p.add(new JLabel("Enter item OR use REMOVE @=INDEX to delete"), BorderLayout.WEST);
         p.add(jtf, BorderLayout.CENTER);
         jtf.setHorizontalAlignment(JTextField.RIGHT);
 
@@ -34,7 +34,7 @@ public class Client extends JFrame {
         add(new JScrollPane(jta), BorderLayout.CENTER);
 
         jtf.addActionListener(new ButtonListener()); // Register listener
-        setTitle("Client");
+        setTitle("To-Do List Client");
         setSize(500, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true); // It is necessary to show the frame here!
@@ -42,8 +42,6 @@ public class Client extends JFrame {
         try {
             // Create a socket to connect to the server
             Socket socket = new Socket("localhost", 8000);
-            // Socket socket = new Socket("130.254.204.36", 8000);
-            // Socket socket = new Socket("drake.Armstrong.edu", 8000);
 
             // Create an input stream to receive data from the server
             fromServer = new DataInputStream(
@@ -59,22 +57,28 @@ public class Client extends JFrame {
     private class ButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             try {
-                // Get the radius from the text field
-                double radius = Double.parseDouble(jtf.getText().trim());
+                String message = jtf.getText().trim();
 
-                // Send the radius to the server
-                toServer.writeDouble(radius);
+                // Clear the input area when user sends a message
+                jtf.setText("");
+
+                // Send the message to the server
+                toServer.writeUTF(message);
                 toServer.flush();
 
-                // Get area from the server
-                double area = fromServer.readDouble();
+                jta.setText("");
 
-                // Display to the text area
-                jta.append("Radius is " + radius + "\n");
-                jta.append("Area received from the server is "
-                        + area + '\n');
+                // Read the list from the server
+                int size = fromServer.readInt();
+
+                jta.append("List Updated: \n");
+                for (int i = 0; i < size; i++) {
+                    String item = fromServer.readUTF();
+                    jta.append(i + ": " + item + "\n");
+                }
+
             } catch (IOException ex) {
-                System.err.println(ex);
+                jta.append("IO Exception: " + ex + '\n');
             }
         }
     }
