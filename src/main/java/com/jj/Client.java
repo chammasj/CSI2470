@@ -59,19 +59,21 @@ public class Client extends JFrame {
             try {
                 String message = jtf.getText().trim();
 
-                // Clear the input area when user sends a message
+                // Clear the input/output area when user sends a message
                 jtf.setText("");
+                jta.setText("");
 
                 // Send the message to the server
                 toServer.writeUTF(message);
                 toServer.flush();
 
-                jta.setText("");
+                if (message.isEmpty()) {
+                    jta.append("ERROR: Cannot add empty message to list.");
+                }
 
                 // Read the list from the server
                 int size = fromServer.readInt();
 
-                jta.append("List Updated: \n");
                 for (int i = 0; i < size; i++) {
                     String item = fromServer.readUTF();
                     jta.append(i + ": " + item + "\n");

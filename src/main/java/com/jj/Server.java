@@ -61,11 +61,16 @@ public class Server extends JFrame {
                         jta.append("Could not remove item at index " + index + '\n');
                     }
                 } else {
-                    list.add(message);
-                    jta.append("Added item to list: " + message + '\n');
+                    if (message.isEmpty()) {
+                        jta.append("Can not add empty item to list." + '\n');
+                    } else {
+                        list.add(message);
+                        jta.append("Added item to list: " + message + '\n');
+                    }
                 }
+                jta.append("\n");
 
-                // Send updated list back to client
+                // Send list to client
                 outputToClient.writeInt(list.size());
                 for (String item : list) {
                     outputToClient.writeUTF(item);
